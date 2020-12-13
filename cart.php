@@ -1,0 +1,243 @@
+<?php 
+ session_start();
+  if (!isset($_SESSION['user_id']))
+   {
+      header("location: login.php");
+   }
+  extract($_POST);
+  include("database.php");
+  $user_id = $_SESSION['user_id'];
+  $cart_data = mysqli_query($conn,"select * from cart where id = $user_id");
+ 
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+
+    <title>Cart</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="assets/css/fontawesome.css">
+    <link rel="stylesheet" href="assets/css/templatemo-style.css">
+    <link rel="stylesheet" href="assets/css/owl.css">
+
+  </head>
+
+<body class="is-preload">
+
+
+    <!-- Wrapper -->
+    <div id="wrapper">
+
+      <!-- Main -->
+        <div id="main">
+          <div class="inner pizza-bg">
+
+            <!-- Header -->
+            <header id="header">
+              <div class="logo">
+                <a href="homepage.php">Flavoredi</a>
+                <a href="cart.php"><svg xmlns="http://www.w3.org/2000/svg" width="49" height="40" viewBox="0 0 24 24"><path d="M24 3l-.743 2h-1.929l-3.474 12h-13.239l-4.615-11h16.812l-.564 2h-13.24l2.937 7h10.428l3.432-12h4.195zm-15.5 15c-.828 0-1.5.672-1.5 1.5 0 .829.672 1.5 1.5 1.5s1.5-.671 1.5-1.5c0-.828-.672-1.5-1.5-1.5zm6.9-7-1.9 7c-.828 0-1.5.671-1.5 1.5s.672 1.5 1.5 1.5 1.5-.671 1.5-1.5c0-.828-.672-1.5-1.5-1.5z"/></svg></a>
+              </div>
+            </header>
+            <div>
+            <!-- Banner -->
+            <section class="main-banner">
+             <!-- Tables -->
+              <section style="padding-top: 20px">
+                <form name="cart" action="payment.php" method="post">
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col-md-12">
+                       <div class="section-heading">
+                        <h2>Your Cart</h2>
+                      </div>
+                       <?php 
+
+                     if(mysqli_num_rows($cart_data) > 0){
+                       $price = 0;
+                       while( $data = mysqli_fetch_array( $cart_data, MYSQLI_ASSOC)) {
+                       
+                      ?>
+                
+                       <div class="row py-2" style="background-color:#fff;border-bottom: 2px solid #c6dbd8">
+                        <div class="col-12 food-item"><mark class="food-item-name"><?php echo $data['name'] ?></mark></div>
+
+                        <?php if (!empty( $data['type'])) { ?>
+                        <div class="col-md-4 pt-2"><span class="food-item-ingredient">Type</span>
+                          <div><?php echo $data['type'] ?></div>
+                        </div>
+                      <?php }
+                        ?>
+
+                         <?php if (!empty( $data['size'])) { ?>
+                        <div class="col-md-4 pt-2"><span class="food-item-ingredient">Size</span>
+                          <div><?php echo $data['size'] ?></div>
+                        </div>
+                        <?php  } ?>
+                          
+                        <?php if (!empty( $data['crust'])) { ?>
+                        <div class="col-md-4 pt-2"><span class="food-item-ingredient">Crust</span>
+                          <div><?php if( !empty( $data['crust'] ) ){
+                                        echo $data['crust'];
+                                      }
+                                      else{
+                                        echo '-';
+                                      }
+                            ?></div>
+                        </div>
+                      <?php } ?>
+
+                       <?php if (!empty( $data['toppings'])) { ?>
+                        <div class="col-md-4 pt-2"><span class="food-item-ingredient">Toppings</span>
+                          <div><?php if( !empty( $data['toppings'] ) ){
+                                        echo $data['toppings'];
+                                      }
+                                      else{
+                                        echo '-';
+                                      }
+                            ?></div>
+                        </div>
+                      <?php } ?>
+
+                       <?php if (!empty( $data['sandwich_bread_category'])) { ?>
+                        <div class="col-md-4 pt-2"><span class="food-item-ingredient">Bread</span>
+                          <div><?php
+                                        echo $data['sandwich_bread_category'];
+                                      
+                            ?></div>
+                        </div>
+                      <?php } ?>
+
+                      <?php if (!empty( $data['veggies'])) { ?>
+                        <div class="col-md-4 pt-2"><span class="food-item-ingredient">Veggies</span>
+                          <div><?php 
+                                        echo $data['veggies'];
+                                      
+                            ?></div>
+                        </div>
+                      <?php } ?>
+
+                      <?php if (!empty( $data['cheese'])) { ?>
+                        <div class="col-md-4 pt-2"><span class="food-item-ingredient">Cheese</span>
+                          <div><?php 
+                                        echo $data['cheese'];
+                                      
+                            ?></div>
+                        </div>
+                      <?php } ?>
+
+                       <?php if (!empty( $data['quantity'])) { ?>
+                        <div class="col-md-4 pt-2"><span class="food-item-ingredient">Quantity</span>
+                          <div><?php echo $data['quantity'] ?></div>
+                        </div>
+                      <?php } ?>
+
+                       <?php if (!empty( $data['price'])) { ?>
+                        <div class="col-md-12 pt-2 cart-item-price"><span class="food-item-ingredient">Price</span>
+                          <div class="cart-item-price-number"><?php echo '$'.$data['price'] ?></div>
+                        </div>
+                      <?php
+                        $price = $price + $data['price'];
+
+                       } ?>
+                         <div class="col-md-4 pt-2 border-rectangle-button">
+                          <a href="remove-from-cart.php?id=<?php echo $data['item_id'] ?>">Remove from cart</a>
+                        </div>
+                      </div>
+                        <?php 
+                      }
+
+                      ?>
+                        <div class="col-md-12 pt-2 cart-item-price"><span class="food-item-ingredient1"> Total Price</span>
+                          <div class="cart-item-price-number1"><?php echo '$'. $price ?></div>
+                        </div>
+                       <div class="col-md-4 pt-4 filled-rectangle-button">
+                          <button type="submit" id="form-submit" class="button filled-rectangle-button">Place order</button>
+                        </div>
+                        <?php
+                    } else{ ?>
+
+                      <div class="section-heading">
+                        <h2>No items in the cart</h2>
+                      </div>
+                   <?php }
+                      ?> 
+                    
+                    </div>
+                  </div>
+                </div>
+            </form>
+                </section>
+            </section>
+          </div>
+          </div>
+        </div>
+        
+      <!-- Sidebar -->
+        <div id="sidebar">
+
+          <div class="inner">
+
+            <!-- Search Box -->
+            <section id="search" class="alt">
+              <h3 style="padding: 40px 0 0 20px;color:#FFF;letter-spacing: 2px">FLAVOREDI </h3>
+            </section>
+              
+            <!-- Menu -->
+            <nav id="menu">
+              <ul>
+                <li><a href="homepage.php">Homepage</a></li>
+                <li><a href="pizza-order.php">Pizza</a></li>
+                <li><a href="sandwich-order.php">Sandwich</a></li>
+                <li><a href="pasta-order.php">Pasta</a></li>
+                <li><a class="recent-order" href="recent-orders.php">Recent Orders</a></li>
+                <li><a class="logout" href="logout.php">Logout</a></li>
+               <!--  <li><a class="recent-order" href="payment.php">Payment</a></li> -->
+              </ul>
+            </nav>
+
+             <section id="lab_social_icon_footer">
+            
+            <div class="container" style="margin-top: 30px !important;margin-left:0px !important;padding-left:0">
+                <div>
+                      <a target="_blank" href="https://www.facebook.com/"><i id="social-fb" class="fa fa-facebook-square fa-2x social"></i></a>&nbsp;&nbsp;
+                      <a target="_blank" href="https://twitter.com/"><i id="social-tw" class="fa fa-twitter-square fa-2x social"></i></a>&nbsp;&nbsp;
+                      <a target="_blank" href="http://instagram.com/"><i id="social-ig" class="fa fa-instagram fa-2x social"></i></a>&nbsp;&nbsp;
+                      <a target="_blank" href="http://youtube.com/"><i id="social-yt" class="fa fa-youtube fa-2x social"></i></a>&nbsp;&nbsp;
+            </div>
+        </div>
+        </section>
+           
+          </div>
+        </div>
+
+    </div>
+  </body>
+
+  <!-- Scripts -->
+  <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/transition.js"></script>
+    <script src="assets/js/owl-carousel.js"></script>
+    <script src="assets/js/custom.js"></script>
+</body>
+
+
+  </body>
+
+</html>
